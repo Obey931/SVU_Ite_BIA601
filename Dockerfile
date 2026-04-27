@@ -14,4 +14,4 @@ COPY --from=build /app/out ./
 ENV ASPNETCORE_URLS=http://+:10000
 EXPOSE 10000
 
-ENTRYPOINT ["dotnet", "SVU_Ite_BIA601.dll"]
+ENTRYPOINT ["dotnet", "BIA601.dll"]
