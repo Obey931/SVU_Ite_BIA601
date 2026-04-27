@@ -1,11 +1,9 @@
-var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
-app.Run($"http://0.0.0.0:{port}");
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -13,7 +11,9 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
+
 var app = builder.Build();
+
 app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
@@ -23,9 +23,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+app.Run($"http://0.0.0.0:{port}");
