@@ -11,7 +11,7 @@ public class RecommendationController : ControllerBase
     {
         
         var connStr = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-
+        Console.WriteLine("CONNECTION = " + connStr);
         if (string.IsNullOrEmpty(connStr))
         {
             throw new Exception("Connection string is NULL ❌");
