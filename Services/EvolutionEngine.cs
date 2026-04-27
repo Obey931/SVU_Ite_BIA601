@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using MySql.Data.MySqlClient;
+using Npgsql;
 
 namespace BIA601.Services
 {
@@ -19,31 +19,35 @@ namespace BIA601.Services
             _conn = conn;
             LoadData();
         }
+
         void LoadData()
         {
             users = new List<User>();
             products = new List<Product>();
             ratings = new List<Rating>();
 
-            using (var conn = new MySqlConnection(_conn))
+            using (var conn = new NpgsqlConnection(_conn))
             {
                 conn.Open();
 
-                var cmd1 = new MySqlCommand("SELECT userID FROM users", conn);
+                // Users
+                var cmd1 = new NpgsqlCommand("SELECT userid FROM users", conn);
                 using (var r1 = cmd1.ExecuteReader())
                 {
                     while (r1.Read())
                         users.Add(new User { Id = r1.GetInt32(0) });
                 }
 
-                var cmd2 = new MySqlCommand("SELECT productID FROM products", conn);
+                // Products
+                var cmd2 = new NpgsqlCommand("SELECT productid FROM products", conn);
                 using (var r2 = cmd2.ExecuteReader())
                 {
                     while (r2.Read())
                         products.Add(new Product { Id = r2.GetInt32(0) });
                 }
 
-                var cmd3 = new MySqlCommand("SELECT userID, productID, rating FROM ratings", conn);
+                // Ratings
+                var cmd3 = new NpgsqlCommand("SELECT userid, productid, rating FROM ratings", conn);
                 using (var r3 = cmd3.ExecuteReader())
                 {
                     while (r3.Read())
@@ -58,6 +62,7 @@ namespace BIA601.Services
                 }
             }
         }
+
         public List<int> GetRecommendations(int userId)
         {
             var user = users.FirstOrDefault(u => u.Id == userId);
@@ -114,7 +119,6 @@ namespace BIA601.Services
             return next;
         }
 
-        // اختيار
         Chromosome Tournament(List<Chromosome> pop)
         {
             return pop
@@ -166,7 +170,7 @@ namespace BIA601.Services
                 if (r != null)
                     score += r.Value * 2;
 
-                score += rand.NextDouble(); 
+                score += rand.NextDouble();
             }
 
             return score;
