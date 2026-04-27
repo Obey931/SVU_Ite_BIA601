@@ -17,7 +17,16 @@ namespace BIA601.Services
         public EvolutionEngine(string conn)
         {
             _conn = conn;
-            LoadData();
+
+            try
+            {
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR LOADING DATA: " + ex.Message);
+                throw;
+            }
         }
 
         void LoadData()
@@ -29,25 +38,21 @@ namespace BIA601.Services
             using (var conn = new NpgsqlConnection(_conn))
             {
                 conn.Open();
-
-                // Users
-                var cmd1 = new NpgsqlCommand("SELECT userid FROM users", conn);
+                using (var cmd1 = new NpgsqlCommand("SELECT userid FROM users", conn))
                 using (var r1 = cmd1.ExecuteReader())
                 {
                     while (r1.Read())
                         users.Add(new User { Id = r1.GetInt32(0) });
                 }
 
-                // Products
-                var cmd2 = new NpgsqlCommand("SELECT productid FROM products", conn);
+                using (var cmd2 = new NpgsqlCommand("SELECT productid FROM products", conn))
                 using (var r2 = cmd2.ExecuteReader())
                 {
                     while (r2.Read())
                         products.Add(new Product { Id = r2.GetInt32(0) });
                 }
 
-                // Ratings
-                var cmd3 = new NpgsqlCommand("SELECT userid, productid, rating FROM ratings", conn);
+                using (var cmd3 = new NpgsqlCommand("SELECT userid, productid, rating FROM ratings", conn))
                 using (var r3 = cmd3.ExecuteReader())
                 {
                     while (r3.Read())
@@ -138,7 +143,7 @@ namespace BIA601.Services
                           .Take(5)
                           .ToList();
 
-            while (result.Count < 5)
+            while (result.Count < 5 && products.Count > 0)
             {
                 var extra = products[rand.Next(products.Count)].Id;
                 if (!result.Contains(extra))
@@ -150,6 +155,8 @@ namespace BIA601.Services
 
         void Mutate(List<int> genes)
         {
+            if (products.Count == 0) return;
+
             if (rand.NextDouble() < 0.2)
             {
                 int index = rand.Next(genes.Count);
