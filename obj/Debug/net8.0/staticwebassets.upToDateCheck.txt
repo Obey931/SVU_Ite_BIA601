@@ -1,4 +1,0 @@
-wwwroot\css\style.css
-wwwroot\images\house.jpg
-wwwroot\index.html
-wwwroot\infoTeam.html
