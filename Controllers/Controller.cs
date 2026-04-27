@@ -9,7 +9,14 @@ public class RecommendationController : ControllerBase
 
     public RecommendationController()
     {
-        string connStr = "server=localhost;port=3306;user=root;password=;database=ecommerce;";
+        
+        var connStr = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+        if (string.IsNullOrEmpty(connStr))
+        {
+            throw new Exception("Connection string is NULL ❌");
+        }
+
         engine = new EvolutionEngine(connStr);
     }
 
